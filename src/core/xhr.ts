@@ -1,10 +1,11 @@
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types'
 import { parseHeaders } from '../helpers/headers'
 import { createError } from '../helpers/error'
+import Cancel from '../cancel/Cancel'
 
-export default function (config: AxiosRequestConfig): AxiosPromise {
+export default function (config: AxiosRequestConfig): AxiosPromise<AxiosResponse> {
   return new Promise((resolve, reject) => {
-    const { method = 'get', url, data = null, headers, responseType, timeout } = config
+    const { method = 'get', url, data = null, headers, responseType, timeout, cancelToken } = config
 
     const request = new XMLHttpRequest()
 
@@ -58,6 +59,13 @@ export default function (config: AxiosRequestConfig): AxiosPromise {
         request.setRequestHeader(name, headers[name])
       }
     })
+
+    if (cancelToken) {
+      cancelToken.promise.then((reason: Cancel) => {
+        request.abort()
+        reject(reason)
+      })
+    }
 
     request.send(data)
 

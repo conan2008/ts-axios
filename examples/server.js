@@ -28,6 +28,9 @@ registerSimpleRouter();
 registerBaseRouter();
 registerErrorRouter();
 registerExtendRouter();
+registerInterceptorRouter();
+registerConfigRouter();
+registerCancelRouter();
 
 app.use(router);
 
@@ -119,9 +122,37 @@ function registerExtendRouter() {
       code: 0,
       message: 'ok',
       result: {
-        name: 'jack',
+        name: 20,
+        name2: 22,
         age: 18
       }
     });
+  });
+}
+
+function registerInterceptorRouter() {
+  router.get('/interceptor/get', function (req, res) {
+    res.end('hello');
+  });
+}
+
+function registerConfigRouter() {
+  router.post('/config/post', function (req, res) {
+    console.dir(req.body)
+    res.json(req.body);
+  });
+}
+
+function registerCancelRouter() {
+  router.get('/cancel/get', function (req, res) {
+    setTimeout(() => {
+      res.json('hello');
+    }, 1000);
+  });
+
+  router.post('/cancel/post', function (req, res) {
+    setTimeout(() => {
+      res.json(req.body);
+    }, 1000);
   });
 }
